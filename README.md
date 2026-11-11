@@ -1,5 +1,13 @@
 # BloodFoxGames — игровой каталог и библиотека
 
+## Архитектура и сервисы
+
+### Architecture Overview
+
+Основная архитектура BloodFoxGames — C4 Model + Docker Compose.
+
+![BloodFoxGames Architecture](docs/screenshots/architecture-overview.png)
+
 BloodFoxGames — учебный веб-проект с несколькими микросервисами. Пользователь может зарегистрироваться, войти, просматривать каталог игр, добавлять игры в личную библиотеку, менять профиль и загружать аватар в S3-совместимое хранилище.
 
 > Это функциональный учебный прототип, а не коммерческая платёжная платформа. Покупка демонстрационная: игра добавляется в библиотеку без списания денег.
@@ -148,9 +156,6 @@ GitHub Actions автоматически запускает Node.js, Maven, Pyt
 Screenshots demonstrating the successful execution
 of the BloodFoxGames backend services.
 
-### Backend Services
-
-![Backend Server](docs/screenshots/server-running.png)
 
 ### Docker Containers
 
