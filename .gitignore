@@ -1,0 +1,11 @@
+.env
+.env.*
+!.env.example
+*.bak
+**/*.bak
+target/
+**/target/
+node_modules/
+__pycache__/
+*.pyc
+*.log

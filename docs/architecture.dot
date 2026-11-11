@@ -1,0 +1,38 @@
+digraph BloodFoxGames {
+  graph [
+    label="BLOODFOXGAMES · C4 CONTAINER VIEW\nТекущая реализация docker-compose.yml",
+    labelloc=t, labeljust=l, fontsize=25, fontname="DejaVu Sans", fontcolor="#f8f7fb",
+    bgcolor="#101116", pad=0.35, nodesep=0.55, ranksep=0.85, splines=ortho,
+    compound=true, newrank=true
+  ];
+  node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=12,
+        color="#5c5363", penwidth=1.5, fontcolor="#f8f7fb", margin="0.20,0.13"];
+  edge [fontname="DejaVu Sans", fontsize=10, fontcolor="#ddd4e3", color="#a9a1b2", penwidth=1.5, arrowsize=0.8];
+
+  subgraph cluster_client {
+    label="КЛИЕНТ"; color="#49404b"; fontcolor="#ff586e"; fontsize=15; style="rounded,dashed";
+    player [label="ИГРОК\nВеб-браузер", fillcolor="#29232b", color="#e94c61"];
+    nginx [label="FRONTEND / NGINX\nHTML · CSS · JavaScript\n:3000 → :80\nСтатика + proxy /api/*", fillcolor="#25384a", color="#4b9ad0"];
+  }
+
+  subgraph cluster_services {
+    label="ПРИКЛАДНЫЕ СЕРВИСЫ · Docker network"; color="#49404b"; fontcolor="#ff586e"; fontsize=15; style="rounded,dashed";
+    store [label="GAME STORE SERVICE\nJava 17 · Spring Boot\n:8080 (internal)\nКаталог · аккаунты · профиль\nБиблиотека · S3 integration", fillcolor="#5a202a", color="#ff5369", penwidth=2.2];
+    users [label="USERS SERVICE\nJava 17 · Spring Boot\n:8081 (internal)\nКаталог-проекция аккаунтов\nPUT /api/v1/users/{accountId}", fillcolor="#243e36", color="#36c994"];
+    notifications [label="NOTIFICATIONS SERVICE\nPython · FastAPI\n:8082 (internal)\nHTTP events → application log\nБез внешней email/push-доставки", fillcolor="#3b304e", color="#a58bdb"];
+  }
+
+  subgraph cluster_data {
+    label="ХРАНЕНИЕ"; color="#49404b"; fontcolor="#ff586e"; fontsize=15; style="rounded,dashed";
+    postgres [shape=cylinder, label="POSTGRESQL 16\n:5432 · local only\nstore_users · games · user_games\nusers (directory projection)\nvolume: db_data", fillcolor="#26384e", color="#66a4df"];
+    s3 [shape=cylinder, label="SEAWEEDFS · S3-compatible\n:8333 · local only\nbucket: bloodfox-assets\nАватары · signed URLs\nvolume: s3_data", fillcolor="#493921", color="#e5ac4b"];
+  }
+
+  player -> nginx [label="HTTP · web UI"];
+  nginx -> store [label="/api/* · HTTP proxy"];
+  store -> postgres [label="JPA / JDBC\nread · write"];
+  store -> users [label="HTTP PUT\nregistration / profile sync"];
+  store -> notifications [label="HTTP POST\npurchase event"];
+  store -> s3 [label="S3 API\nPutObject · DeleteObject\npresigned GetObject"];
+  users -> postgres [label="JPA / JDBC\nread · write directory"];
+}
